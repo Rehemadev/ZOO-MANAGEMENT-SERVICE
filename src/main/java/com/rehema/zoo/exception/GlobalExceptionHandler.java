@@ -27,8 +27,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
         Map<String, String> error = new HashMap<>();
-        String message = ex.getMostSpecificCause().getMessage();
-        if (message.contains("Duplicate")) {
+        String message = ex.getMostSpecificCause() != null ? ex.getMostSpecificCause().getMessage() : ex.getMessage();
+        if (message != null && message.contains("Duplicate")) {
             error.put("error", "A record with this data already exists.");
         } else {
             error.put("error", "Database constraint violation: " + message);
@@ -37,10 +37,24 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(error, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler(org.springframework.security.core.AuthenticationException.class)
+    public ResponseEntity<Map<String, String>> handleAuthenticationException(org.springframework.security.core.AuthenticationException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Authentication failed: " + ex.getMessage());
+        return new ResponseEntity<>(error, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(org.springframework.web.bind.MissingServletRequestParameterException.class)
+    public ResponseEntity<Map<String, String>> handleMissingParams(org.springframework.web.bind.MissingServletRequestParameterException ex) {
+        Map<String, String> error = new HashMap<>();
+        error.put("error", "Missing parameter: " + ex.getParameterName());
+        return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<Map<String, String>> handleRuntimeException(RuntimeException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put("error", ex.getMessage() != null ? ex.getMessage() : "An unexpected runtime error occurred");
         log.error("Runtime exception: ", ex);
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
@@ -48,7 +62,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGeneralException(Exception ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Internal Server Error: " + ex.getMessage());
+        error.put("error", "Internal Server Error: " + (ex.getMessage() != null ? ex.getMessage() : "Unknown error"));
         error.put("details", ex.getClass().getSimpleName());
         log.error("Unhandled exception: ", ex);
         return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);

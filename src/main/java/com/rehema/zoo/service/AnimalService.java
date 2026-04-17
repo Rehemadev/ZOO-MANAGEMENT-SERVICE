@@ -18,11 +18,15 @@ public class AnimalService {
 
     @Transactional
     public AnimalDto createAnimal(AnimalDto animalDto) {
+        if (animalDto == null) {
+            throw new IllegalArgumentException("Animal data cannot be null");
+        }
+        
         Animal animal = new Animal();
         animal.setName(animalDto.getName());
         animal.setSpecies(animalDto.getSpecies());
         animal.setAge(animalDto.getAge());
-        animal.setHealthStatus(animalDto.getHealthStatus());
+        animal.setHealthStatus(animalDto.getHealthStatus() != null ? animalDto.getHealthStatus() : "Healthy");
 
         Animal savedAnimal = animalRepository.save(animal);
         return mapToDto(savedAnimal);
@@ -30,24 +34,29 @@ public class AnimalService {
 
     public List<AnimalDto> getAllAnimals(Optional<String> species, Optional<String> status) {
         List<Animal> animals;
-        if (species.isPresent() && status.isPresent()) {
-            animals = animalRepository.findBySpeciesContainingIgnoreCaseAndHealthStatus(species.get(), status.get());
-        } else if (species.isPresent()) {
-            animals = animalRepository.findBySpeciesContainingIgnoreCase(species.get());
-        } else if (status.isPresent()) {
-            animals = animalRepository.findByHealthStatus(status.get());
-        } else {
-            animals = animalRepository.findAll();
+        try {
+            if (species.isPresent() && status.isPresent()) {
+                animals = animalRepository.findBySpeciesContainingIgnoreCaseAndHealthStatus(species.get(), status.get());
+            } else if (species.isPresent()) {
+                animals = animalRepository.findBySpeciesContainingIgnoreCase(species.get());
+            } else if (status.isPresent()) {
+                animals = animalRepository.findByHealthStatus(status.get());
+            } else {
+                animals = animalRepository.findAll();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching animals: " + e.getMessage());
         }
+        
         return animals.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
     }
 
     public AnimalDto getAnimalById(Long id) {
-        Animal animal = animalRepository.findById(id)
+        return animalRepository.findById(id)
+                .map(this::mapToDto)
                 .orElseThrow(() -> new RuntimeException("Animal not found with id: " + id));
-        return mapToDto(animal);
     }
 
     @Transactional
@@ -55,10 +64,10 @@ public class AnimalService {
         Animal animal = animalRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Animal not found with id: " + id));
 
-        animal.setName(animalDto.getName());
-        animal.setSpecies(animalDto.getSpecies());
-        animal.setAge(animalDto.getAge());
-        animal.setHealthStatus(animalDto.getHealthStatus());
+        if (animalDto.getName() != null) animal.setName(animalDto.getName());
+        if (animalDto.getSpecies() != null) animal.setSpecies(animalDto.getSpecies());
+        if (animalDto.getAge() != null) animal.setAge(animalDto.getAge());
+        if (animalDto.getHealthStatus() != null) animal.setHealthStatus(animalDto.getHealthStatus());
 
         Animal updatedAnimal = animalRepository.save(animal);
         return mapToDto(updatedAnimal);
@@ -66,9 +75,10 @@ public class AnimalService {
 
     @Transactional
     public void deleteAnimal(Long id) {
-        Animal animal = animalRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Animal not found with id: " + id));
-        animalRepository.delete(animal);
+        if (!animalRepository.existsById(id)) {
+            throw new RuntimeException("Cannot delete: Animal not found with id: " + id);
+        }
+        animalRepository.deleteById(id);
     }
 
     private AnimalDto mapToDto(Animal animal) {

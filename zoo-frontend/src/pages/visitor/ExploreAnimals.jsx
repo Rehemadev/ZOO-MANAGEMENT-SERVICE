@@ -11,7 +11,7 @@ const ExploreAnimals = () => {
     }, []);
 
     // Filter to only show animals generally deemed ready to be viewed by visitors
-    const visibleAnimals = animals.filter(a => a.healthStatus !== 'In Treatment');
+    const visibleAnimals = animals.filter(a => a.healthStatus !== 'Under Treatment');
 
     return (
         <div className="container mt-4 pb-5">

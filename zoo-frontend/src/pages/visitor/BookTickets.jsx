@@ -20,8 +20,8 @@ const BookTickets = () => {
         }
     }, [user.id]);
 
-    const loadBookings = (userId) => {
-        bookingService.getUserBookings(userId).then(setBookings).catch(console.error);
+    const loadBookings = () => {
+        bookingService.getMyBookings().then(setBookings).catch(console.error);
     };
 
     const handleFormSubmit = async (e) => {
@@ -44,7 +44,7 @@ const BookTickets = () => {
 
             setMessage({ type: 'success', text: `Successfully booked ${tickets} ticket(s)!` });
             setTickets(1);
-            loadBookings(user.id);
+            loadBookings();
         } catch (error) {
             console.error("Booking error", error);
             setMessage({ type: 'danger', text: 'Error processing your booking or payment.' });

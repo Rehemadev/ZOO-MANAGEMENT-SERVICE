@@ -26,4 +26,10 @@ public class Animal {
 
     @Column(nullable = false)
     private String healthStatus;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<HealthRecord> healthRecords;
+
+    @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
+    private java.util.List<FeedingSchedule> feedingSchedules;
 }
