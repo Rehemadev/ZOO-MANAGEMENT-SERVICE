@@ -39,12 +39,20 @@ public class FeedingScheduleService {
                 .collect(Collectors.toList());
     }
 
+    public List<FeedingScheduleDto> getAllSchedules() {
+        return scheduleRepository.findAll().stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
     private FeedingScheduleDto mapToDto(FeedingSchedule schedule) {
         FeedingScheduleDto dto = new FeedingScheduleDto();
         dto.setId(schedule.getId());
         dto.setAnimalId(schedule.getAnimal().getId());
+        dto.setAnimalName(schedule.getAnimal().getName());
         dto.setFeedingTime(schedule.getFeedingTime());
         dto.setFoodType(schedule.getFoodType());
         return dto;
     }
 }
+

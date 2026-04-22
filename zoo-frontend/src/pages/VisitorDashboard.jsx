@@ -6,34 +6,22 @@ const VisitorDashboard = () => {
     const navigate = useNavigate();
     const user = authService.getCurrentUser();
 
-    const handleLogout = () => {
-        authService.logout();
-        navigate('/login');
-    };
-
     return (
         <div style={{
             minHeight: '100vh',
-            background: `linear-gradient(rgba(15, 23, 42, 0.7), rgba(15, 23, 42, 0.7)), url('/visitor_bg.jpg')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            background: '#f8fafc',
             padding: '40px 20px'
         }}>
             <div className="container" style={{ maxWidth: '1100px' }}>
-                <div className="glass-panel fade-in" style={{ padding: '40px', marginBottom: '30px' }}>
-                    <div className="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h1 style={{ fontSize: '2.5rem', marginBottom: '8px' }}>Explorer Hub</h1>
-                            <p style={{ color: 'var(--text-muted)' }}>Wildlife awaits you, <span className="text-gradient" style={{ fontWeight: '600' }}>{user?.fullName || 'Explorer'}</span></p>
-                        </div>
-                        <button className="btn-premium" style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#f87171', border: '1px solid rgba(239, 68, 68, 0.2)' }} onClick={handleLogout}>
-                            Logout
-                        </button>
+                <div className="glass-panel fade-in" style={{ padding: '40px', marginBottom: '30px', background: 'white' }}>
+                    <div>
+                        <h1 style={{ fontSize: '2.5rem', marginBottom: '8px', color: '#1e293b', fontWeight: '800' }}>Visitor Dashboard</h1>
+                        <p style={{ color: 'var(--text-muted)' }}>Wildlife awaits you, <span className="text-gradient" style={{ fontWeight: '700' }}>{user?.fullName || 'Explorer'}</span></p>
                     </div>
                 </div>
 
-                <div className="glass-card fade-in" style={{ padding: '20px', marginBottom: '40px', border: 'none', background: 'linear-gradient(90deg, rgba(236, 72, 153, 0.1), rgba(139, 92, 246, 0.1))' }}>
-                    <div className="text-center fw-bold text-gradient" style={{ fontSize: '1.2rem' }}>
+                <div className="glass-card fade-in" style={{ padding: '24px', marginBottom: '40px', border: 'none', background: 'white', boxShadow: '0 4px 20px rgba(5, 150, 105, 0.05)' }}>
+                    <div className="text-center fw-bold text-gradient" style={{ fontSize: '1.1rem' }}>
                         🦁 LIVE EVENT: Feeding the Lions at 3:00 PM! Join us at the Main Habitat.
                     </div>
                 </div>
@@ -41,37 +29,37 @@ const VisitorDashboard = () => {
                 <div className="row g-4">
                     <div className="col-md-6 col-lg-3">
                         <Link to="/visitor/animals" style={{ textDecoration: 'none' }}>
-                            <div className="glass-card fade-in" style={{ padding: '30px', height: '100%', textAlign: 'center' }}>
-                                <div style={{ fontSize: '40px', marginBottom: '16px' }}>🐾</div>
-                                <h4 style={{ color: 'white' }}>Explore</h4>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Discover exotic species.</p>
+                            <div className="glass-card fade-in h-100" style={{ padding: '32px', textAlign: 'center', background: 'white' }}>
+                                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🐾</div>
+                                <h4 style={{ color: '#1e293b', fontWeight: '700', marginBottom: '12px' }}>Explore</h4>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.5' }}>Discover exotic and majestic species.</p>
                             </div>
                         </Link>
                     </div>
                     <div className="col-md-6 col-lg-3">
                         <Link to="/visitor/book" style={{ textDecoration: 'none' }}>
-                            <div className="glass-card fade-in" style={{ padding: '30px', height: '100%', textAlign: 'center' }}>
-                                <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎟️</div>
-                                <h4 style={{ color: 'white' }}>Tickets</h4>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Secure your entry.</p>
+                            <div className="glass-card fade-in h-100" style={{ padding: '32px', textAlign: 'center', background: 'white' }}>
+                                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🎟️</div>
+                                <h4 style={{ color: '#1e293b', fontWeight: '700', marginBottom: '12px' }}>Tickets</h4>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.5' }}>Secure your entry to the sanctuary.</p>
                             </div>
                         </Link>
                     </div>
                     <div className="col-md-6 col-lg-3">
                         <Link to="/visitor/events" style={{ textDecoration: 'none' }}>
-                            <div className="glass-card fade-in" style={{ padding: '30px', height: '100%', textAlign: 'center' }}>
-                                <div style={{ fontSize: '40px', marginBottom: '16px' }}>🎪</div>
-                                <h4 style={{ color: 'white' }}>Events</h4>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Show timetables.</p>
+                            <div className="glass-card fade-in h-100" style={{ padding: '32px', textAlign: 'center', background: 'white' }}>
+                                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🎪</div>
+                                <h4 style={{ color: '#1e293b', fontWeight: '700', marginBottom: '12px' }}>Events</h4>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.5' }}>View live show timetables.</p>
                             </div>
                         </Link>
                     </div>
                     <div className="col-md-6 col-lg-3">
                         <Link to="/visitor/map" style={{ textDecoration: 'none' }}>
-                            <div className="glass-card fade-in" style={{ padding: '30px', height: '100%', textAlign: 'center' }}>
-                                <div style={{ fontSize: '40px', marginBottom: '16px' }}>🗺️</div>
-                                <h4 style={{ color: 'white' }}>Map</h4>
-                                <p style={{ color: 'var(--text-muted)', fontSize: '14px' }}>Navigate the park.</p>
+                            <div className="glass-card fade-in h-100" style={{ padding: '32px', textAlign: 'center', background: 'white' }}>
+                                <div style={{ fontSize: '48px', marginBottom: '20px' }}>🗺️</div>
+                                <h4 style={{ color: '#1e293b', fontWeight: '700', marginBottom: '12px' }}>Map</h4>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '14px', lineHeight: '1.5' }}>Navigate the entire park easily.</p>
                             </div>
                         </Link>
                     </div>
@@ -82,5 +70,3 @@ const VisitorDashboard = () => {
 };
 
 export default VisitorDashboard;
-
-

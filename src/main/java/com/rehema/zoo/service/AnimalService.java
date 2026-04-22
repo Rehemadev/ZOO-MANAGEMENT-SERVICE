@@ -32,10 +32,12 @@ public class AnimalService {
         return mapToDto(savedAnimal);
     }
 
-    public List<AnimalDto> getAllAnimals(Optional<String> species, Optional<String> status) {
+    public List<AnimalDto> getAllAnimals(Optional<String> species, Optional<String> status, Optional<String> search) {
         List<Animal> animals;
         try {
-            if (species.isPresent() && status.isPresent()) {
+            if (search.isPresent() && !search.get().isEmpty()) {
+                animals = animalRepository.findByNameContainingIgnoreCaseOrSpeciesContainingIgnoreCase(search.get(), search.get());
+            } else if (species.isPresent() && status.isPresent()) {
                 animals = animalRepository.findBySpeciesContainingIgnoreCaseAndHealthStatus(species.get(), status.get());
             } else if (species.isPresent()) {
                 animals = animalRepository.findBySpeciesContainingIgnoreCase(species.get());

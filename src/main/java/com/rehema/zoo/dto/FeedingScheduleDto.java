@@ -9,4 +9,7 @@ public class FeedingScheduleDto {
     private Long animalId;
     private LocalTime feedingTime;
     private String foodType;
+    private String animalName;
 }
+
+

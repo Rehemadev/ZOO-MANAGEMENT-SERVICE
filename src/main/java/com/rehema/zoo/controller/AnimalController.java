@@ -28,8 +28,13 @@ public class AnimalController {
     @PreAuthorize("hasAnyRole('ADMIN', 'ZOOKEEPER', 'VISITOR')")
     public ResponseEntity<List<AnimalDto>> getAllAnimals(
             @RequestParam(required = false) String species,
-            @RequestParam(required = false) String status) {
-        return ResponseEntity.ok(animalService.getAllAnimals(Optional.ofNullable(species), Optional.ofNullable(status)));
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String search) {
+        return ResponseEntity.ok(animalService.getAllAnimals(
+            Optional.ofNullable(species), 
+            Optional.ofNullable(status),
+            Optional.ofNullable(search)
+        ));
     }
 
     @GetMapping("/{id}")

@@ -8,4 +8,5 @@ public interface AnimalRepository extends JpaRepository<Animal, Long> {
     List<Animal> findBySpeciesContainingIgnoreCase(String species);
     List<Animal> findByHealthStatus(String status);
     List<Animal> findBySpeciesContainingIgnoreCaseAndHealthStatus(String species, String status);
+    List<Animal> findByNameContainingIgnoreCaseOrSpeciesContainingIgnoreCase(String name, String species);
 }

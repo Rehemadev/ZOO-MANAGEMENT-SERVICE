@@ -1,17 +1,15 @@
 import api from './api';
 
 export const animalService = {
-    getAll: () => api.get('/animals').then(res => res.data),
+    getAll: (search) => {
+        const params = new URLSearchParams();
+        if (search) params.append('search', search);
+        return api.get(`/animals?${params.toString()}`).then(res => res.data);
+    },
     getById: (id) => api.get(`/animals/${id}`).then(res => res.data),
     create: (data) => api.post('/animals', data).then(res => res.data),
     update: (id, data) => api.put(`/animals/${id}`, data).then(res => res.data),
-    delete: (id) => api.delete(`/animals/${id}`).then(res => res.data),
-    search: (species, status) => {
-        const params = new URLSearchParams();
-        if (species) params.append('species', species);
-        if (status) params.append('status', status);
-        return api.get(`/animals?${params.toString()}`).then(res => res.data);
-    }
+    delete: (id) => api.delete(`/animals/${id}`).then(res => res.data)
 };
 
 export const userService = {
@@ -29,9 +27,11 @@ export const healthRecordService = {
 };
 
 export const feedingScheduleService = {
+    getAll: () => api.get('/feeding-schedules').then(res => res.data),
     getByAnimal: (animalId) => api.get(`/feeding-schedules/animal/${animalId}`).then(res => res.data),
     create: (data) => api.post('/feeding-schedules', data).then(res => res.data)
 };
+
 
 export const bookingService = {
     getAll: () => api.get('/bookings').then(res => res.data),

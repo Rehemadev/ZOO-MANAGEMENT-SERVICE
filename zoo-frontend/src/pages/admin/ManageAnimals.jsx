@@ -20,95 +20,120 @@ const ManageAnimals = () => {
         e.preventDefault();
         if (editingId) {
             await animalService.update(editingId, formData);
-            setEditingId(null);
         } else {
             await animalService.create(formData);
         }
         setFormData({ name: '', species: '', age: '', healthStatus: 'Healthy' });
+        setEditingId(null);
         loadAnimals();
     };
 
     const handleEdit = (animal) => {
-        setFormData({
-            name: animal.name,
-            species: animal.species,
-            age: animal.age,
-            healthStatus: animal.healthStatus
-        });
         setEditingId(animal.id);
-    };
-
-    const cancelEdit = () => {
-        setFormData({ name: '', species: '', age: '', healthStatus: 'Healthy' });
-        setEditingId(null);
+        setFormData({ name: animal.name, species: animal.species, age: animal.age, healthStatus: animal.healthStatus });
     };
 
     const handleDelete = async (id) => {
-        await animalService.delete(id);
-        loadAnimals();
+        if (window.confirm('Are you sure you want to remove this inhabitant?')) {
+            await animalService.delete(id);
+            loadAnimals();
+        }
     };
 
     return (
-        <div className="container mt-4">
-            <button className="btn btn-secondary mb-3" onClick={() => navigate(-1)}>&larr; Back to Dashboard</button>
-            <h2>Manage Animals</h2>
-            <div className="card mb-4 shadow-sm">
-                <div className="card-body">
-                    <h4>{editingId ? 'Update Animal' : 'Add New Animal'}</h4>
-                    <form onSubmit={handleSubmit} className="row g-3">
-                        <div className="col-md-3">
-                            <input type="text" className="form-control" placeholder="Name" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required />
+        <div style={{
+            minHeight: '100vh',
+            background: '#f8fafc',
+            padding: '40px 20px'
+        }}>
+            <div className="container" style={{ maxWidth: '1200px' }}>
+                <div className="mb-5">
+                    <h1 className="text-gradient" style={{ fontSize: '2.5rem', marginBottom: '0' }}>Animal Inventory</h1>
+                    <p style={{ color: 'var(--text-muted)', margin: 0 }}>Manage the sanctuary inhabitants and their vital information</p>
+                </div>
+
+                <div className="glass-panel fade-in mb-5" style={{ padding: '40px', background: 'white' }}>
+                    <h4 style={{ color: '#1e293b', marginBottom: '30px', fontWeight: '800' }}>
+                        {editingId ? '📝 Edit Inhabitant' : '➕ Register New Inhabitant'}
+                    </h4>
+                    <form onSubmit={handleSubmit}>
+                        <div className="row g-4">
+                            <div className="col-md-3">
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Name</label>
+                                <input type="text" placeholder="e.g. Simba" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} required style={{ background: '#f8fafc' }} />
+                            </div>
+                            <div className="col-md-3">
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Species</label>
+                                <input type="text" placeholder="e.g. African Lion" value={formData.species} onChange={e => setFormData({...formData, species: e.target.value})} required style={{ background: '#f8fafc' }} />
+                            </div>
+                            <div className="col-md-2">
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Age</label>
+                                <input type="number" placeholder="Years" value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} required style={{ background: '#f8fafc' }} />
+                            </div>
+                            <div className="col-md-2">
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Health Status</label>
+                                <select value={formData.healthStatus} onChange={e => setFormData({...formData, healthStatus: e.target.value})} style={{ background: '#f8fafc' }}>
+                                    <option value="Healthy">Healthy</option>
+                                    <option value="Under Treatment">Under Treatment</option>
+                                    <option value="Recovering">Recovering</option>
+                                </select>
+                            </div>
+                            <div className="col-md-2 d-flex align-items-end">
+                                <button type="submit" className="btn-premium btn-primary-gradient w-100" style={{ height: '52px' }}>
+                                    {editingId ? 'Update' : 'Register'}
+                                </button>
+                            </div>
                         </div>
-                        <div className="col-md-3">
-                            <input type="text" className="form-control" placeholder="Species" value={formData.species} onChange={e => setFormData({...formData, species: e.target.value})} required />
-                        </div>
-                        <div className="col-md-3">
-                            <input type="number" className="form-control" placeholder="Age" value={formData.age} onChange={e => setFormData({...formData, age: e.target.value})} required />
-                        </div>
-                        <div className="col-md-3">
-                            <select className="form-select" value={formData.healthStatus} onChange={e => setFormData({...formData, healthStatus: e.target.value})}>
-                                <option>Healthy</option>
-                                <option>Sick</option>
-                                <option>In Treatment</option>
-                            </select>
-                        </div>
-                        <div className="col-12">
-                            <button type="submit" className="btn btn-primary me-2">{editingId ? 'Update Animal' : 'Add Animal'}</button>
-                            {editingId && (
-                                <button type="button" className="btn btn-secondary" onClick={cancelEdit}>Cancel</button>
-                            )}
-                        </div>
+                        {editingId && (
+                            <button type="button" className="btn mt-3" onClick={() => {setEditingId(null); setFormData({name:'', species:'', age:'', healthStatus:'Healthy'});}} style={{ color: '#64748b', fontWeight: '600', fontSize: '13px' }}>Cancel Editing</button>
+                        )}
                     </form>
                 </div>
-            </div>
 
-            <table className="table table-striped table-hover shadow-sm">
-                <thead className="table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Species</th>
-                        <th>Age</th>
-                        <th>Health Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {animals.map(animal => (
-                        <tr key={animal.id}>
-                            <td>{animal.id}</td>
-                            <td>{animal.name}</td>
-                            <td>{animal.species}</td>
-                            <td>{animal.age}</td>
-                            <td><span className={`badge ${animal.healthStatus === 'Healthy' ? 'bg-success' : 'bg-warning text-dark'}`}>{animal.healthStatus}</span></td>
-                            <td>
-                                <button className="btn btn-sm btn-info text-white me-2" onClick={() => handleEdit(animal)}>Edit</button>
-                                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(animal.id)}>Delete</button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+                <div className="glass-panel fade-in" style={{ padding: '0', overflow: 'hidden', background: 'white' }}>
+                    <div className="table-responsive">
+                        <table className="table table-hover mb-0">
+                            <thead style={{ background: '#f8fafc' }}>
+                                <tr>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>ID</th>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>NAME</th>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>SPECIES</th>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>AGE</th>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>HEALTH</th>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700', textAlign: 'right' }}>ACTIONS</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {animals.map(animal => (
+                                    <tr key={animal.id}>
+                                        <td style={{ padding: '20px 30px', color: '#94a3b8', fontWeight: '600' }}>#{animal.id}</td>
+                                        <td style={{ padding: '20px 30px', color: '#1e293b', fontWeight: '700' }}>{animal.name}</td>
+                                        <td style={{ padding: '20px 30px', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase', fontSize: '13px' }}>{animal.species}</td>
+                                        <td style={{ padding: '20px 30px', color: '#64748b', fontWeight: '600' }}>{animal.age} Yrs</td>
+                                        <td style={{ padding: '20px 30px' }}>
+                                            <span style={{ 
+                                                padding: '4px 12px', 
+                                                borderRadius: '20px', 
+                                                background: animal.healthStatus === 'Healthy' ? '#f0fdf4' : '#fef2f2', 
+                                                color: animal.healthStatus === 'Healthy' ? '#059669' : '#ef4444', 
+                                                fontSize: '11px', 
+                                                fontWeight: '700',
+                                                border: `1px solid ${animal.healthStatus === 'Healthy' ? '#dcfce7' : '#fee2e2'}`
+                                            }}>
+                                                {(animal.healthStatus || 'Healthy').toUpperCase()}
+                                            </span>
+                                        </td>
+                                        <td style={{ padding: '20px 30px', textAlign: 'right' }}>
+                                            <button onClick={() => handleEdit(animal)} className="btn btn-sm me-2" style={{ background: '#f1f5f9', color: '#64748b', borderRadius: '8px', padding: '6px 12px', fontWeight: '700' }}>Edit</button>
+                                            <button onClick={() => handleDelete(animal.id)} className="btn btn-sm" style={{ background: '#fef2f2', color: '#ef4444', borderRadius: '8px', padding: '6px 12px', fontWeight: '700' }}>Delete</button>
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     );
 };
