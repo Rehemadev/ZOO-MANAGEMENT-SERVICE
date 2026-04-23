@@ -34,4 +34,11 @@ public class UserController {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}/approve")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Void> approveUser(@PathVariable Long id) {
+        userService.approveUser(id);
+        return ResponseEntity.ok().build();
+    }
 }

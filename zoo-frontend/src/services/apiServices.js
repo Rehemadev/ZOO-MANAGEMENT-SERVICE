@@ -15,7 +15,8 @@ export const animalService = {
 export const userService = {
     getAll: () => api.get('/users').then(res => res.data),
     getAllStaff: () => api.get('/users/staff').then(res => res.data),
-    delete: (id) => api.delete(`/users/${id}`).then(res => res.data)
+    delete: (id) => api.delete(`/users/${id}`).then(res => res.data),
+    approve: (id) => api.put(`/users/${id}/approve`).then(res => res.data)
 };
 
 export const healthRecordService = {

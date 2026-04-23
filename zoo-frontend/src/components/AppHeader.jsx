@@ -58,8 +58,34 @@ const AppHeader = () => {
                 </div>
                 
                 <div className="app-header__actions">
-                    <button className="app-header__btn" onClick={toggleTheme} title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
-                        <span className="app-header__btn-icon">{theme === 'dark' ? '🌙' : '☀️'}</span>
+                    <button 
+                        className="theme-toggle-btn" 
+                        onClick={toggleTheme} 
+                        title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                        style={{
+                            width: '45px',
+                            height: '45px',
+                            borderRadius: '14px',
+                            border: '1px solid var(--border)',
+                            background: 'var(--bg-panel)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                            boxShadow: 'var(--shadow-sm)',
+                            padding: 0
+                        }}
+                    >
+                        {theme === 'dark' ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#facc15" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>
+                            </svg>
+                        ) : (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/>
+                            </svg>
+                        )}
                     </button>
                 </div>
                 

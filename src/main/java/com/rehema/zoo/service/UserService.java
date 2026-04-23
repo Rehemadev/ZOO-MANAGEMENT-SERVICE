@@ -35,12 +35,20 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public void approveUser(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
+
     private UserDto mapToDto(User user) {
         UserDto dto = new UserDto();
         dto.setId(user.getId());
         dto.setFullName(user.getFullName());
         dto.setEmail(user.getEmail());
         dto.setRole(user.getRole().getName());
+        dto.setEnabled(user.isEnabled());
         return dto;
     }
 }

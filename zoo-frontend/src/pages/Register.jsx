@@ -3,17 +3,31 @@ import { useNavigate, Link } from 'react-router-dom';
 import authService from '../services/authService';
 
 const Register = () => {
-    const [formData, setFormData] = useState({ fullName: '', email: '', password: '', role: 'VISITOR' });
+    const [formData, setFormData] = useState({ fullName: '', email: '', password: '', confirmPassword: '', role: 'VISITOR' });
     const [error, setError] = useState('');
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
         e.preventDefault();
+        setError('');
+        
+        if (formData.password !== formData.confirmPassword) {
+            setError("Passwords do not match!");
+            return;
+        }
+
         try {
             await authService.register(formData.fullName, formData.email, formData.password, formData.role);
             navigate('/login');
         } catch (err) {
-            setError(err.response?.data?.error || 'Registration failed. Please try again.');
+            const data = err.response?.data;
+            if (data && typeof data === 'object' && !data.error) {
+                // Handle validation errors from MethodArgumentNotValidException
+                const fieldErrors = Object.values(data).join(', ');
+                setError(fieldErrors || 'Registration failed.');
+            } else {
+                setError(data?.error || 'Registration failed. Please try again.');
+            }
         }
     };
 
@@ -84,6 +98,18 @@ const Register = () => {
                     </div>
 
                     <div className="input-group">
+                        <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#64748b' }}>Confirm Password</label>
+                        <input 
+                            type="password" 
+                            placeholder="••••••••"
+                            value={formData.confirmPassword} 
+                            onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})} 
+                            required 
+                            style={{ background: 'var(--bg-input)', border: '1px solid var(--border)', color: 'var(--text-main)' }}
+                        />
+                    </div>
+
+                    <div className="input-group">
                         <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '800', textTransform: 'uppercase', letterSpacing: '1px', color: '#64748b' }}>Account Type</label>
                         <select 
                             value={formData.role} 
@@ -94,6 +120,8 @@ const Register = () => {
                             <option value="ZOOKEEPER">Staff / Zookeeper</option>
                         </select>
                     </div>
+
+
 
                     <button type="submit" className="btn-premium btn-primary-gradient w-100" style={{ marginTop: '12px', height: '56px', fontSize: '16px' }}>
                         Create Account

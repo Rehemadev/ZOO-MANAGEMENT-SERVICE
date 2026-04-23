@@ -65,8 +65,16 @@ public class AuthService {
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setRole(role);
+        
+        // If it's a zookeeper, they start as disabled until admin approves
+        if ("ZOOKEEPER".equals(roleName)) {
+            user.setEnabled(false);
+        } else {
+            user.setEnabled(true);
+        }
+        
         userRepository.save(user);
-        log.info("User saved successfully: {}", user.getEmail());
+        log.info("User saved successfully: {} (Enabled: {})", user.getEmail(), user.isEnabled());
 
         String token = jwtUtils.generateToken(user.getEmail());
 
@@ -80,12 +88,16 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (!user.isEnabled()) {
+            throw new RuntimeException("Your account is pending approval by the administrator.");
+        }
+
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword())
         );
-
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
         String token = jwtUtils.generateToken(userDetails);
