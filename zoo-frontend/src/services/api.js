@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-    baseURL: '/api',
+    baseURL: 'https://zoo-management-service.onrender.com/api',
 });
 
 // Add a request interceptor to add the JWT token to the headers
