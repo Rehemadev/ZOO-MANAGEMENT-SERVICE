@@ -4,8 +4,9 @@ import { useNavigate } from 'react-router-dom';
 
 const ManageAnimals = () => {
     const [animals, setAnimals] = useState([]);
-    const [formData, setFormData] = useState({ name: '', species: '', age: '', healthStatus: 'Healthy' });
+    const [formData, setFormData] = useState({ name: '', species: '', age: '', healthStatus: 'Healthy', imageUrl: '' });
     const [editingId, setEditingId] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -18,19 +19,20 @@ const ManageAnimals = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (isUploading) return;
         if (editingId) {
             await animalService.update(editingId, formData);
         } else {
             await animalService.create(formData);
         }
-        setFormData({ name: '', species: '', age: '', healthStatus: 'Healthy' });
+        setFormData({ name: '', species: '', age: '', healthStatus: 'Healthy', imageUrl: '' });
         setEditingId(null);
         loadAnimals();
     };
 
     const handleEdit = (animal) => {
         setEditingId(animal.id);
-        setFormData({ name: animal.name, species: animal.species, age: animal.age, healthStatus: animal.healthStatus });
+        setFormData({ name: animal.name, species: animal.species, age: animal.age, healthStatus: animal.healthStatus, imageUrl: animal.imageUrl || '' });
     };
 
     const handleDelete = async (id) => {
@@ -78,9 +80,54 @@ const ManageAnimals = () => {
                                     <option value="Recovering">Recovering</option>
                                 </select>
                             </div>
+                            <div className="col-md-10">
+                                <label style={{ display: 'block', marginBottom: '8px', fontSize: '12px', fontWeight: '700', color: '#64748b', textTransform: 'uppercase' }}>Image URL or Upload</label>
+                                <div style={{ display: 'flex', gap: '10px' }}>
+                                    <input 
+                                        type="text" 
+                                        placeholder="https://example.com/image.jpg" 
+                                        value={formData.imageUrl} 
+                                        onChange={e => setFormData({...formData, imageUrl: e.target.value})} 
+                                        style={{ background: '#f8fafc', flexGrow: 1 }} 
+                                    />
+                                    <label className="btn-premium" style={{ 
+                                        background: 'var(--bg-panel)', 
+                                        color: 'var(--primary)', 
+                                        border: '1px solid var(--primary)', 
+                                        cursor: 'pointer',
+                                        height: '52px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        padding: '0 20px',
+                                        fontSize: '13px',
+                                        fontWeight: '700',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        Upload File
+                                        <input 
+                                            type="file" 
+                                            accept="image/*" 
+                                            style={{ display: 'none' }} 
+                                            onChange={async (e) => {
+                                                const file = e.target.files[0];
+                                                if (file) {
+                                                    setIsUploading(true);
+                                                    const reader = new FileReader();
+                                                    reader.onloadend = () => {
+                                                        setFormData({...formData, imageUrl: reader.result});
+                                                        setIsUploading(false);
+                                                    };
+                                                    reader.onerror = () => setIsUploading(false);
+                                                    reader.readAsDataURL(file);
+                                                }
+                                            }} 
+                                        />
+                                    </label>
+                                </div>
+                            </div>
                             <div className="col-md-2 d-flex align-items-end">
-                                <button type="submit" className="btn-premium btn-primary-gradient w-100" style={{ height: '52px' }}>
-                                    {editingId ? 'Update' : 'Register'}
+                                <button type="submit" disabled={isUploading} className="btn-premium btn-primary-gradient w-100" style={{ height: '52px', opacity: isUploading ? 0.6 : 1 }}>
+                                    {isUploading ? 'Reading...' : (editingId ? 'Update' : 'Register')}
                                 </button>
                             </div>
                         </div>
@@ -96,6 +143,7 @@ const ManageAnimals = () => {
                             <thead style={{ background: '#f8fafc' }}>
                                 <tr>
                                     <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>ID</th>
+                                    <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>PHOTO</th>
                                     <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>NAME</th>
                                     <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>SPECIES</th>
                                     <th style={{ padding: '20px 30px', fontSize: '12px', color: '#64748b', fontWeight: '700' }}>AGE</th>
@@ -107,6 +155,11 @@ const ManageAnimals = () => {
                                 {animals.map(animal => (
                                     <tr key={animal.id}>
                                         <td style={{ padding: '20px 30px', color: '#94a3b8', fontWeight: '600' }}>#{animal.id}</td>
+                                        <td style={{ padding: '20px 30px' }}>
+                                            <div style={{ width: '40px', height: '40px', borderRadius: '8px', background: '#f1f5f9', overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                {animal.imageUrl ? <img src={animal.imageUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} /> : '🐾'}
+                                            </div>
+                                        </td>
                                         <td style={{ padding: '20px 30px', color: '#1e293b', fontWeight: '700' }}>{animal.name}</td>
                                         <td style={{ padding: '20px 30px', color: 'var(--primary)', fontWeight: '700', textTransform: 'uppercase', fontSize: '13px' }}>{animal.species}</td>
                                         <td style={{ padding: '20px 30px', color: '#64748b', fontWeight: '600' }}>{animal.age} Yrs</td>

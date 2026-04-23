@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { animalService } from '../../services/apiServices';
+import { animalService, healthRecordService, feedingScheduleService } from '../../services/apiServices';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const ExploreAnimals = () => {
@@ -7,12 +7,40 @@ const ExploreAnimals = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const searchQuery = new URLSearchParams(location.search).get('search') || '';
+    
+    const [selectedAnimal, setSelectedAnimal] = useState(null);
+    const [healthRecords, setHealthRecords] = useState([]);
+    const [feedingSchedules, setFeedingSchedules] = useState([]);
+    const [loadingDetails, setLoadingDetails] = useState(false);
 
     useEffect(() => {
         animalService.getAll(searchQuery).then(setAnimals).catch(console.error);
     }, [searchQuery]);
 
     const visibleAnimals = (animals || []).filter(a => a && a.healthStatus !== 'Under Treatment');
+
+    const formatTime = (time) => {
+        if (!time) return '00:00';
+        if (Array.isArray(time)) {
+            return `${time[0].toString().padStart(2, '0')}:${time[1].toString().padStart(2, '0')}`;
+        }
+        return typeof time === 'string' ? time.substring(0, 5) : time;
+    };
+
+    const handleObserveDetails = async (animal) => {
+        setSelectedAnimal(animal);
+        setLoadingDetails(true);
+        try {
+            const records = await healthRecordService.getByAnimal(animal.id);
+            const schedules = await feedingScheduleService.getByAnimal(animal.id);
+            setHealthRecords(records || []);
+            setFeedingSchedules(schedules || []);
+        } catch (error) {
+            console.error("Error fetching details:", error);
+        } finally {
+            setLoadingDetails(false);
+        }
+    };
 
     return (
         <div style={{
@@ -39,11 +67,15 @@ const ExploreAnimals = () => {
                                     fontSize: '64px',
                                     position: 'relative'
                                 }}>
-                                    {(animal.species || '').toLowerCase().includes('lion') ? '🦁' : 
-                                     (animal.species || '').toLowerCase().includes('elephant') ? '🐘' : 
-                                     (animal.species || '').toLowerCase().includes('zebra') ? '🦓' : 
-                                     (animal.species || '').toLowerCase().includes('monkey') ? '🐒' : 
-                                     (animal.species || '').toLowerCase().includes('bird') ? '🦜' : '🐾'}
+                                    {animal.imageUrl ? (
+                                        <img src={animal.imageUrl} alt={animal.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                        (animal.species || '').toLowerCase().includes('lion') ? '🦁' : 
+                                        (animal.species || '').toLowerCase().includes('elephant') ? '🐘' : 
+                                        (animal.species || '').toLowerCase().includes('zebra') ? '🦓' : 
+                                        (animal.species || '').toLowerCase().includes('monkey') ? '🐒' : 
+                                        (animal.species || '').toLowerCase().includes('bird') ? '🦜' : '🐾'
+                                    )}
                                      <div style={{ position: 'absolute', bottom: '15px', right: '15px', fontSize: '11px', background: 'rgba(15, 23, 42, 0.05)', color: '#64748b', padding: '5px 12px', borderRadius: '20px', fontWeight: '700', letterSpacing: '0.5px' }}>
                                         {animal.age} YEARS OLD
                                      </div>
@@ -68,7 +100,11 @@ const ExploreAnimals = () => {
                                     </div>
                                 </div>
                                 <div style={{ padding: '20px 30px', borderTop: '1px solid #f1f5f9' }}>
-                                    <button className="btn-premium w-100" style={{ background: 'white', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>
+                                    <button 
+                                        className="btn-premium w-100" 
+                                        onClick={() => handleObserveDetails(animal)}
+                                        style={{ background: 'white', border: '1px solid #e2e8f0', color: '#64748b', fontSize: '13px', fontWeight: '700' }}
+                                    >
                                         Observe Details
                                     </button>
                                 </div>
@@ -87,6 +123,97 @@ const ExploreAnimals = () => {
                     )}
                 </div>
             </div>
+
+            {selectedAnimal && (
+                <div className="modal-overlay" style={{
+                    position: 'fixed',
+                    top: 0, left: 0, right: 0, bottom: 0,
+                    background: 'rgba(15, 23, 42, 0.6)',
+                    backdropFilter: 'blur(8px)',
+                    zIndex: 1000,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '20px'
+                }} onClick={() => setSelectedAnimal(null)}>
+                    <div className="glass-panel slide-up" style={{
+                        width: '100%',
+                        maxWidth: '800px',
+                        maxHeight: '90vh',
+                        overflowY: 'auto',
+                        background: 'white',
+                        padding: 0,
+                        borderRadius: '24px'
+                    }} onClick={e => e.stopPropagation()}>
+                        <div style={{ position: 'relative', height: '300px', background: '#f1f5f9' }}>
+                            {selectedAnimal.imageUrl ? (
+                                <img src={selectedAnimal.imageUrl} alt={selectedAnimal.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                                <div style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '100px' }}>🐾</div>
+                            )}
+                            <button 
+                                onClick={() => setSelectedAnimal(null)}
+                                style={{ position: 'absolute', top: '20px', right: '20px', background: 'white', border: 'none', width: '40px', height: '40px', borderRadius: '50%', fontWeight: '700', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
+                            >✕</button>
+                        </div>
+                        
+                        <div style={{ padding: '40px' }}>
+                            <div className="d-flex justify-content-between align-items-start mb-4">
+                                <div>
+                                    <h2 style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '4px' }}>{selectedAnimal.name}</h2>
+                                    <p className="text-gradient" style={{ fontWeight: '700', textTransform: 'uppercase', letterSpacing: '2px' }}>{selectedAnimal.species}</p>
+                                </div>
+                                <div style={{ textAlign: 'right' }}>
+                                    <span style={{ 
+                                        padding: '8px 20px', 
+                                        background: 'rgba(5, 150, 105, 0.08)', 
+                                        color: 'var(--primary)', 
+                                        borderRadius: '30px', 
+                                        fontWeight: '700',
+                                        border: '1px solid rgba(5, 150, 105, 0.1)' 
+                                    }}>
+                                        {selectedAnimal.healthStatus?.toUpperCase()}
+                                    </span>
+                                    <p style={{ marginTop: '10px', fontWeight: '600', color: '#64748b' }}>Age: {selectedAnimal.age} Years</p>
+                                </div>
+                            </div>
+
+                            <div className="row g-4 mt-2">
+                                <div className="col-md-6">
+                                    <h4 style={{ fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ background: '#f1f5f9', padding: '8px', borderRadius: '10px' }}>📅</span> Feeding Schedule
+                                    </h4>
+                                    {loadingDetails ? <p>Loading...</p> : feedingSchedules.length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {feedingSchedules.map(fs => (
+                                                <div key={fs.id} style={{ padding: '15px', background: 'var(--bg-panel)', borderRadius: '15px', border: '1px solid var(--border)' }}>
+                                                    <div style={{ fontWeight: '700', color: 'var(--text-main)' }}>{fs.foodType}</div>
+                                                    <div style={{ fontSize: '13px', color: 'var(--text-muted)' }}>{formatTime(fs.feedingTime)}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : <p style={{ color: '#94a3b8' }}>No feeding schedule found.</p>}
+                                </div>
+                                <div className="col-md-6">
+                                    <h4 style={{ fontWeight: '800', marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                                        <span style={{ background: '#f1f5f9', padding: '8px', borderRadius: '10px' }}>🩺</span> Health Records
+                                    </h4>
+                                    {loadingDetails ? <p>Loading...</p> : healthRecords.length > 0 ? (
+                                        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                                            {healthRecords.map(hr => (
+                                                <div key={hr.id} style={{ padding: '15px', background: '#f8fafc', borderRadius: '15px', border: '1px solid #f1f5f9' }}>
+                                                    <div style={{ fontWeight: '700', color: '#1e293b' }}>{hr.diagnosis}</div>
+                                                    <div style={{ fontSize: '13px', color: '#64748b' }}>{new Date(hr.checkupDate).toLocaleDateString()} • {hr.treatment}</div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : <p style={{ color: '#94a3b8' }}>No recent health records.</p>}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

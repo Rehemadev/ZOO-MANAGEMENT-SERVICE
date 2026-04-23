@@ -20,12 +20,21 @@ const UpcomingEvents = () => {
                 } else if (typeof event.feedingTime === 'string') {
                     timeString = event.feedingTime.substring(0, 5);
                 }
-                return { ...event, formattedTime: timeString };
+                
+                // Determine status
+                let status = 'Upcoming';
+                const eventTime = timeString;
+                if (eventTime === currentTimeStr) {
+                    status = 'Live Now';
+                } else if (eventTime < currentTimeStr) {
+                    status = 'Completed';
+                }
+
+                return { ...event, formattedTime: timeString, status };
             });
 
-            const upcoming = processedEvents.filter(event => event.formattedTime >= currentTimeStr);
-            upcoming.sort((a, b) => a.formattedTime.localeCompare(b.formattedTime));
-            setEvents(upcoming);
+            const sortedEvents = processedEvents.sort((a, b) => a.formattedTime.localeCompare(b.formattedTime));
+            setEvents(sortedEvents);
         }).catch(console.error);
     }, []);
 
@@ -77,15 +86,37 @@ const UpcomingEvents = () => {
                                 <div style={{ flexGrow: 1 }}>
                                     <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '8px' }}>
                                         <span style={{ fontSize: '32px' }}>{getEmoji(event.animalName)}</span>
-                                        <h3 style={{ color: '#1e293b', margin: 0, fontSize: '24px', fontWeight: '700' }}>Feeding: {event.animalName}</h3>
+                                        <h3 style={{ color: 'var(--text-main)', margin: 0, fontSize: '24px', fontWeight: '700' }}>Feeding: {event.animalName}</h3>
+                                        <span style={{ 
+                                            padding: '4px 12px', 
+                                            borderRadius: '20px', 
+                                            fontSize: '11px', 
+                                            fontWeight: '800',
+                                            background: event.status === 'Live Now' ? '#fef2f2' : (event.status === 'Completed' ? '#f1f5f9' : '#f0fdf4'),
+                                            color: event.status === 'Live Now' ? '#ef4444' : (event.status === 'Completed' ? '#64748b' : '#059669'),
+                                            border: `1px solid ${event.status === 'Live Now' ? '#fee2e2' : (event.status === 'Completed' ? '#e2e8f0' : '#dcfce7')}`
+                                        }}>
+                                            {event.status.toUpperCase()}
+                                        </span>
                                     </div>
-                                    <div style={{ color: '#64748b', fontSize: '15px', fontWeight: '500' }}>
+                                    <div style={{ color: 'var(--text-muted)', fontSize: '15px', fontWeight: '500' }}>
                                         🍽️ Menu: {event.foodType} • ⏳ Duration: 15 min
                                     </div>
                                 </div>
 
-                                <button className="btn-premium" style={{ border: '1px solid #e2e8f0', background: 'white', color: '#64748b', fontSize: '13px', fontWeight: '700' }}>
-                                    Notify Me
+                                <button 
+                                    className="btn-premium" 
+                                    disabled={event.status === 'Completed'}
+                                    style={{ 
+                                        border: '1px solid #e2e8f0', 
+                                        background: 'white', 
+                                        color: '#64748b', 
+                                        fontSize: '13px', 
+                                        fontWeight: '700',
+                                        opacity: event.status === 'Completed' ? 0.5 : 1
+                                    }}
+                                >
+                                    {event.status === 'Completed' ? 'Finished' : 'Notify Me'}
                                 </button>
                             </div>
                         </div>

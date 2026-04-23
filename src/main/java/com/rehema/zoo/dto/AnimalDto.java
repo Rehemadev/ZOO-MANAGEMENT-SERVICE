@@ -18,4 +18,6 @@ public class AnimalDto {
     private Integer age;
 
     private String healthStatus;
+
+    private String imageUrl;
 }

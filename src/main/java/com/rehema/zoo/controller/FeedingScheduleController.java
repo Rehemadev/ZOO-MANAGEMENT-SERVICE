@@ -29,8 +29,7 @@ public class FeedingScheduleController {
     }
 
     @GetMapping("/animal/{animalId}")
-
-    @PreAuthorize("hasAnyRole('ADMIN', 'ZOOKEEPER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'ZOOKEEPER', 'VISITOR')")
     public ResponseEntity<List<FeedingScheduleDto>> getSchedulesByAnimal(@PathVariable Long animalId) {
         return ResponseEntity.ok(scheduleService.getSchedulesByAnimalId(animalId));
     }

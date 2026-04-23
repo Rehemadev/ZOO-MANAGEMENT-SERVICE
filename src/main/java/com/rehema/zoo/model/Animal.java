@@ -27,6 +27,10 @@ public class Animal {
     @Column(nullable = false)
     private String healthStatus;
 
+    @Lob
+    @Column(columnDefinition = "LONGTEXT")
+    private String imageUrl;
+
     @OneToMany(mappedBy = "animal", cascade = CascadeType.ALL, orphanRemoval = true)
     private java.util.List<HealthRecord> healthRecords;
 

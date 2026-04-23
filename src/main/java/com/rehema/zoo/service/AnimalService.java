@@ -27,6 +27,7 @@ public class AnimalService {
         animal.setSpecies(animalDto.getSpecies());
         animal.setAge(animalDto.getAge());
         animal.setHealthStatus(animalDto.getHealthStatus() != null ? animalDto.getHealthStatus() : "Healthy");
+        animal.setImageUrl(animalDto.getImageUrl());
 
         Animal savedAnimal = animalRepository.save(animal);
         return mapToDto(savedAnimal);
@@ -70,6 +71,7 @@ public class AnimalService {
         if (animalDto.getSpecies() != null) animal.setSpecies(animalDto.getSpecies());
         if (animalDto.getAge() != null) animal.setAge(animalDto.getAge());
         if (animalDto.getHealthStatus() != null) animal.setHealthStatus(animalDto.getHealthStatus());
+        if (animalDto.getImageUrl() != null) animal.setImageUrl(animalDto.getImageUrl());
 
         Animal updatedAnimal = animalRepository.save(animal);
         return mapToDto(updatedAnimal);
@@ -90,6 +92,7 @@ public class AnimalService {
         dto.setSpecies(animal.getSpecies());
         dto.setAge(animal.getAge());
         dto.setHealthStatus(animal.getHealthStatus());
+        dto.setImageUrl(animal.getImageUrl());
         return dto;
     }
 }
