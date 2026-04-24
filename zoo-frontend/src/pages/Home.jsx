@@ -231,8 +231,8 @@ const Home = () => {
 
             {/* CTA Section */}
             <section className="home-cta" id="visit">
-                <div className="home-cta__glow home-cta__glow--purple"></div>
-                <div className="home-cta__glow home-cta__glow--pink"></div>
+                <div className="home-cta__glow home-cta__glow--primary"></div>
+                <div className="home-cta__glow home-cta__glow--secondary"></div>
                 <div className="home-cta__content">
                     <div className="home-section__tag">Plan Your Visit</div>
                     <h2 className="home-cta__title">Ready for an Unforgettable Adventure?</h2>
