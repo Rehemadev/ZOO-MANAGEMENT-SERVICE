@@ -3,7 +3,7 @@ import { bookingService } from '../../services/apiServices';
 import authService from '../../services/authService';
 
 const BookTickets = () => {
-    const [booking, setBooking] = useState({ ticketCount: 1, bookingDate: '', totalCost: 50 });
+    const [booking, setBooking] = useState({ numberOfTickets: 1, bookingDate: '', totalAmount: 50 });
     const [history, setHistory] = useState([]);
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
@@ -24,10 +24,14 @@ const BookTickets = () => {
         setError('');
         setSuccess('');
         try {
-            await bookingService.create({ ...booking, userId: user.id });
+            await bookingService.create({ 
+                ...booking, 
+                bookingDate: booking.bookingDate + 'T00:00:00',
+                userId: user.id 
+            });
             setSuccess('Booking successful! Your tickets are ready.');
             loadHistory();
-            setBooking({ ticketCount: 1, bookingDate: '', totalCost: 50 });
+            setBooking({ numberOfTickets: 1, bookingDate: '', totalAmount: 50 });
             setTimeout(() => setSuccess(''), 3000);
         } catch (err) {
             setError(err.response?.data?.error || 'Booking failed.');
@@ -71,8 +75,8 @@ const BookTickets = () => {
                                 <input 
                                     type="number" 
                                     min="1" 
-                                    value={booking.ticketCount} 
-                                    onChange={e => setBooking({...booking, ticketCount: e.target.value, totalCost: e.target.value * 50})} 
+                                    value={booking.numberOfTickets} 
+                                    onChange={e => setBooking({...booking, numberOfTickets: e.target.value, totalAmount: e.target.value * 50})} 
                                     required 
                                     style={{ background: '#f8fafc', border: '1px solid #e2e8f0' }}
                                 />
@@ -83,7 +87,7 @@ const BookTickets = () => {
                             <div className="d-flex justify-content-between align-items-center">
                                 <div>
                                     <div style={{ color: '#64748b', fontSize: '13px', fontWeight: '700' }}>TOTAL AMOUNT DUE</div>
-                                    <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--primary)' }}>${booking.totalCost}.00</div>
+                                    <div style={{ fontSize: '28px', fontWeight: '900', color: 'var(--primary)' }}>${booking.totalAmount}.00</div>
                                 </div>
                                 <button type="submit" className="btn-premium btn-primary-gradient px-5" style={{ height: '56px', fontSize: '16px' }}>
                                     Confirm Booking
@@ -112,9 +116,9 @@ const BookTickets = () => {
                                 {history.map(b => (
                                     <tr key={b.id}>
                                         <td style={{ padding: '16px 32px', fontWeight: '700', color: '#1e293b' }}>#ORD-{b.id}</td>
-                                        <td style={{ padding: '16px 32px', color: '#64748b' }}>{b.bookingDate}</td>
-                                        <td style={{ padding: '16px 32px', color: '#1e293b', fontWeight: '600' }}>{b.ticketCount} Units</td>
-                                        <td style={{ padding: '16px 32px', color: 'var(--primary)', fontWeight: '700' }}>${b.totalCost}</td>
+                                        <td style={{ padding: '16px 32px', color: '#64748b' }}>{b.bookingDate?.split('T')[0]}</td>
+                                        <td style={{ padding: '16px 32px', color: '#1e293b', fontWeight: '600' }}>{b.numberOfTickets} Units</td>
+                                        <td style={{ padding: '16px 32px', color: 'var(--primary)', fontWeight: '700' }}>${b.totalAmount}</td>
                                         <td style={{ padding: '16px 32px' }}>
                                             <span style={{ padding: '4px 12px', borderRadius: '20px', background: '#f0fdf4', color: '#059669', fontSize: '11px', fontWeight: '700', border: '1px solid #dcfce7' }}>CONFIRMED</span>
                                         </td>

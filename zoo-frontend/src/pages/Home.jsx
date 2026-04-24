@@ -96,7 +96,7 @@ const Home = () => {
                 <div className="home-nav__inner">
                     <div className="home-nav__brand">
                         <div className="home-nav__logo">ZMS</div>
-                        <span className="home-nav__name">Zoo Management</span>
+                        <span className="home-nav__name">Zoo Management Service</span>
                     </div>
                     <div className="home-nav__links">
                         <a href="#animals" className="home-nav__link">Animals</a>

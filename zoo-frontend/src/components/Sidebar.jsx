@@ -58,7 +58,7 @@ const Sidebar = ({ children }) => {
                 {/* Brand */}
                 <div className="sidebar__brand">
                     <div className="sidebar__logo">ZMS</div>
-                    {!collapsed && <span className="sidebar__brand-text">Zoo Management</span>}
+                    {!collapsed && <span className="sidebar__brand-text">Zoo Management Service</span>}
                 </div>
 
                 {/* Toggle Button */}

@@ -1,5 +1,5 @@
 {
-  "name": "zoo-frontend",
+  "name": "zoo-management-service",
   "private": true,
   "version": "0.0.0",
   "type": "module",
