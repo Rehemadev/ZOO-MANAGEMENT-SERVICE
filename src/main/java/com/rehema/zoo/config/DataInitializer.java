@@ -35,15 +35,15 @@ public class DataInitializer {
             log.info("Roles initialized: ADMIN, ZOOKEEPER, VISITOR");
 
             // Seed Default Admin User
-            if (userRepository.findByEmail("admin@zoo.com").isEmpty()) {
+            if (userRepository.findByEmail("ismailshumbusho15@gmail.com").isEmpty()) {
                 Role adminRole = roleRepository.findByName("ADMIN").get();
                 User admin = new User();
-                admin.setFullName("System Admin");
-                admin.setEmail("admin@zoo.com");
-                admin.setPassword(passwordEncoder.encode("admin123"));
+                admin.setFullName("shumbusho ismail");
+                admin.setEmail("ismailshumbusho15@gmail.com");
+                admin.setPassword(passwordEncoder.encode("Rahma@123"));
                 admin.setRole(adminRole);
                 userRepository.save(admin);
-                log.info("Default Admin created: admin@zoo.com / admin123");
+                log.info("Default Admin created: ismailshumbusho15@gmail.com / Rahma@123");
             }
         };
     }

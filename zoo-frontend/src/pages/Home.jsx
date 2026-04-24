@@ -32,19 +32,19 @@ const Home = () => {
         {
             name: 'African Giraffe',
             species: 'Giraffa camelopardalis',
-            image: '/animals_section.jpg',
+            image: '/giraffe_fixed.png',
             description: 'The tallest living terrestrial animal, known for its long neck and distinctive coat patterns.'
         },
         {
             name: 'Bengal Tiger',
             species: 'Panthera tigris tigris',
-            image: '/tiger_section.jpg',
+            image: '/tiger_fixed.png',
             description: 'A majestic big cat species with striking orange coat and black stripes, native to Asia.'
         },
         {
             name: 'African Elephant',
             species: 'Loxodonta africana',
-            image: '/elephant_section.jpg',
+            image: '/elephant_fixed.png',
             description: 'The largest living land animal, known for intelligence and complex social behaviors.'
         }
     ];
